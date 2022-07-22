@@ -1,4 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        navigationArgsPath = '/build/generated/source/navigation-args'
+        appNavigation = "${project(':app').projectDir.path}$navigationArgsPath"
+        navigationPath = "${project(':core:navigation').projectDir.path}$navigationArgsPath"
+        navigationPackage = "com.shine_st.navigation"
+
+        navigation_version = "2.5.0"
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 plugins {
     id 'com.android.application' version '7.2.0' apply false
     id 'com.android.library' version '7.2.0' apply false

@@ -14,3 +14,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "navigation_demo"
 include ':app'
+include ':core:navigation'
+include ':features:feature_one'
+include ':features:feature_two'

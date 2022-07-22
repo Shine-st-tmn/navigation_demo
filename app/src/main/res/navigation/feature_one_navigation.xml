@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feature_one_navigation"
+    app:startDestination="@id/fragment_one_destination">
+
+    <fragment
+        android:id="@+id/fragment_one_destination"
+        android:name="com.shint_st.feature_one.OneFragment"
+        tools:layout="@layout/fragment_one" />
+
+</navigation>
