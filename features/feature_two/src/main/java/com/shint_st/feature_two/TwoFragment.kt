@@ -1,5 +1,6 @@
 package com.shint_st.feature_two
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.shint_st.feature_two.databinding.FragmentTwoBinding
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class TwoFragment : Fragment() {
     private var _binding: FragmentTwoBinding? = null
@@ -18,11 +21,10 @@ class TwoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTwoBinding.inflate(inflater, container, false)
-
         binding.mbNavigateToThree.setOnClickListener {
-            findNavController().navigate(
-                com.shint_st.navigation.R.id.action_fragment_two_to_fragment_three,
-            )
+            val params = ThreeFragment.Parameters("")
+            val argument = Uri.encode(Json.encodeToString(params))
+            findNavController().navigate("${ThreeFragment.NAVIGATION_ID}/$argument")
         }
 
         return binding.root
@@ -31,5 +33,9 @@ class TwoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        const val NAVIGATION_ID = "TwoFragment_destination"
     }
 }

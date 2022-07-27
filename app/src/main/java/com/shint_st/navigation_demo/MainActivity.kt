@@ -2,15 +2,15 @@ package com.shint_st.navigation_demo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.createGraph
 import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
-import com.shint_st.navigation.NavigationController
-import com.shint_st.navigation.Tab
 import com.shint_st.navigation_demo.databinding.ActivityMainBinding
+import com.shint_st.navigation_demo.navigation.TopGraph
+import com.shint_st.navigation_demo.navigation.setupWithDSLNavController
 
-class MainActivity : AppCompatActivity(), NavigationController {
-
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val navigationGraph by lazy { TopGraph() }
 
     private val navController by lazy {
         findNavController(R.id.nav_host_fragment_activity_main)
@@ -20,25 +20,10 @@ class MainActivity : AppCompatActivity(), NavigationController {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        binding.navView.setupWithNavController(navController)
-        binding.navView.setOnItemReselectedListener {
-            val direction = when (it.itemId) {
-                R.id.feature_one_navigation -> R.id.fragment_one_destination
-                R.id.feature_two_navigation -> R.id.fragment_two_destination
-                else -> return@setOnItemReselectedListener
-            }
-
-            navController.popBackStack(direction, false)
-        }
-    }
-
-    override fun selectTab(tab: Tab, onSelected: (() -> Unit)?) {
-        binding.navView.selectedItemId = when (tab) {
-            Tab.FEATURE_ONE -> R.id.feature_one_navigation
-            Tab.FEATURE_TWO -> R.id.feature_two_navigation
+        navController.graph = navController.createGraph(navigationGraph.startDestination, "MAIN") {
+            also(navigationGraph.navigationGraph)
         }
 
-        onSelected?.invoke()
+        binding.navView.setupWithDSLNavController(navController)
     }
 }
