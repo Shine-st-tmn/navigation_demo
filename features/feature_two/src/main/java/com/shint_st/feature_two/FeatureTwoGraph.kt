@@ -9,7 +9,7 @@ class FeatureTwoGraph : NavigationGraph {
     override val navigationGraph: NavGraphBuilder.() -> Unit = {
         fragment<TwoFragment>(TwoFragment.NAVIGATION_ID)
 
-        fragment<ThreeFragment>(ThreeFragment.NAVIGATION_ID) {
+        fragment<ThreeFragment>("${ThreeFragment.NAVIGATION_ID}/{${ThreeFragment.ARGUMENTS}}") {
             argument(ThreeFragment.ARGUMENTS) {
                 type = ThreeFragment.ParametersType()
                 defaultValue = ThreeFragment.Parameters("ThreeFragment")

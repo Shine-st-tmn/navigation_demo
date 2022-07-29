@@ -22,7 +22,7 @@ class TwoFragment : Fragment() {
     ): View {
         _binding = FragmentTwoBinding.inflate(inflater, container, false)
         binding.mbNavigateToThree.setOnClickListener {
-            val params = ThreeFragment.Parameters("")
+            val params = ThreeFragment.Parameters("42 is antwort")
             val argument = Uri.encode(Json.encodeToString(params))
             findNavController().navigate("${ThreeFragment.NAVIGATION_ID}/$argument")
         }
