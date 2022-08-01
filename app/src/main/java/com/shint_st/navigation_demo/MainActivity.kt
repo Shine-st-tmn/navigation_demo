@@ -4,14 +4,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
+import com.shint_st.navigation.NavigationGraph
 import com.shint_st.navigation_demo.databinding.ActivityMainBinding
-import com.shint_st.navigation_demo.navigation.TopGraph
 import com.shint_st.navigation_demo.navigation.setupWithDSLNavController
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var navigationGraph: NavigationGraph
     private lateinit var binding: ActivityMainBinding
-    private val navigationGraph by lazy { TopGraph() }
-
     private val navController by lazy {
         findNavController(R.id.nav_host_fragment_activity_main)
     }

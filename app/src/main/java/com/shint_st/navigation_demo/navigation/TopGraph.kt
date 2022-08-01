@@ -5,11 +5,18 @@ import androidx.navigation.navigation
 import com.shint_st.feature_one.navigation.FeatureOneGraph
 import com.shint_st.feature_two.FeatureTwoGraph
 import com.shint_st.navigation.NavigationGraph
+import dagger.hilt.components.SingletonComponent
+import it.czerwinski.android.hilt.annotations.BoundTo
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TopGraph : NavigationGraph {
+@Singleton
+@BoundTo(supertype = NavigationGraph::class, component = SingletonComponent::class)
+class TopGraph @Inject constructor(
+    private val featureOneGraph: FeatureOneGraph,
+    private val featureTwoGraph: FeatureTwoGraph,
+) : NavigationGraph {
     override val startDestination: String = FEATURE_ONE_NAVIGATION
-    private val featureOneGraph = FeatureOneGraph()
-    private val featureTwoGraph = FeatureTwoGraph()
 
     override val navigationGraph: NavGraphBuilder.() -> Unit = {
         navigation(featureOneGraph.startDestination, FEATURE_ONE_NAVIGATION) {
