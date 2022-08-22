@@ -1,4 +1,4 @@
-package com.shint_st.navigation_demo.navigation
+package com.shint_st.navigation.utils
 
 import android.os.Bundle
 import androidx.core.view.forEach
@@ -8,16 +8,20 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
 import com.google.android.material.navigation.NavigationBarView
-import com.shint_st.navigation_demo.R
+import com.shint_st.navigation.api.NavScope
 import java.lang.ref.WeakReference
 
-internal object CustomNavigationUI {
+typealias NavBarItemId = Int
+
+internal class CustomNavigationUI(
+    private val navGraphMap: Map<NavBarItemId, NavScope>
+) {
     fun setupWithNavController(
         navigationBarView: NavigationBarView,
         navController: NavController
     ) {
         navigationBarView.setOnItemSelectedListener { item ->
-            val graph = getGraphNameById(item.itemId) ?: return@setOnItemSelectedListener false
+            val graph = navGraphMap[item.itemId]?.tag ?: return@setOnItemSelectedListener false
             val builder = NavOptions.Builder().apply {
                 setLaunchSingleTop(true)
                 setRestoreState(true)
@@ -49,7 +53,7 @@ internal object CustomNavigationUI {
                         return
                     }
                     view.menu.forEach { item ->
-                        val graph = getGraphNameById(item.itemId) ?: return@forEach
+                        val graph = navGraphMap[item.itemId]?.tag ?: return@forEach
                         if (destination.matchDestination(graph)) {
                             item.isChecked = true
                         }
@@ -58,18 +62,15 @@ internal object CustomNavigationUI {
             })
     }
 
-    private fun NavDestination.matchDestination(id: String): Boolean =
-        hierarchy.any {
-            it.route == id
-        }
-
-    private fun getGraphNameById(id: Int) = when (id) {
-        R.id.feature_one_navigation -> TopGraph.FEATURE_ONE_NAVIGATION
-        R.id.feature_two_navigation -> TopGraph.FEATURE_TWO_NAVIGATION
-        else -> null
+    private fun NavDestination.matchDestination(id: String): Boolean = hierarchy.any {
+        it.route == id
     }
 }
 
-fun NavigationBarView.setupWithDSLNavController(navController: NavController) {
-    CustomNavigationUI.setupWithNavController(this, navController)
-}
+fun NavigationBarView.setupWithDSLNavController(
+    navController: NavController,
+    navGraphMap: Map<NavBarItemId, NavScope>
+) = CustomNavigationUI(navGraphMap).setupWithNavController(
+    this,
+    navController
+)

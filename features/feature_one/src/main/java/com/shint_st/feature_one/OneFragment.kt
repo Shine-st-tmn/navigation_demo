@@ -36,8 +36,4 @@ class OneFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    companion object {
-        const val NAVIGATION_ID = "OneFragment_destination"
-    }
 }

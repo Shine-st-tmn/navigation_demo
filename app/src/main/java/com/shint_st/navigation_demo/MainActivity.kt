@@ -4,16 +4,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
-import com.shint_st.navigation.NavigationGraph
+import com.shint_st.navigation.api.NavGraphComposer
+import com.shint_st.navigation.api.NavScope
+import com.shint_st.navigation.utils.setupWithDSLNavController
 import com.shint_st.navigation_demo.databinding.ActivityMainBinding
-import com.shint_st.navigation_demo.navigation.setupWithDSLNavController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
-    lateinit var navigationGraph: NavigationGraph
+    lateinit var navigationGraph: NavGraphComposer
     private lateinit var binding: ActivityMainBinding
     private val navController by lazy {
         findNavController(R.id.nav_host_fragment_activity_main)
@@ -24,9 +25,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         navController.graph = navController.createGraph(navigationGraph.startDestination, "MAIN") {
-            also(navigationGraph.navigationGraph)
+            also(navigationGraph.provideGraph())
         }
 
-        binding.navView.setupWithDSLNavController(navController)
+        binding.navView.setupWithDSLNavController(
+            navController, mapOf(
+                R.id.feature_one_navigation to NavScope.HOME,
+                R.id.feature_two_navigation to NavScope.HUB
+            )
+        )
     }
 }

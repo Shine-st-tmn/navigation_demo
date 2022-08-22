@@ -4,32 +4,28 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.shint_st.feature_one.navigation.FeatureOneGraph
 import com.shint_st.feature_two.FeatureTwoGraph
-import com.shint_st.navigation.NavigationGraph
+import com.shint_st.navigation.api.NavGraphComposer
+import com.shint_st.navigation.api.NavScope
 import dagger.hilt.components.SingletonComponent
 import it.czerwinski.android.hilt.annotations.BoundTo
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@BoundTo(supertype = NavigationGraph::class, component = SingletonComponent::class)
+@BoundTo(supertype = NavGraphComposer::class, component = SingletonComponent::class)
 class TopGraph @Inject constructor(
     private val featureOneGraph: FeatureOneGraph,
     private val featureTwoGraph: FeatureTwoGraph,
-) : NavigationGraph {
-    override val startDestination: String = FEATURE_ONE_NAVIGATION
+) : NavGraphComposer {
+    override val startDestination: String = NavScope.HOME.tag
 
-    override val navigationGraph: NavGraphBuilder.() -> Unit = {
-        navigation(featureOneGraph.startDestination, FEATURE_ONE_NAVIGATION) {
-            also(featureOneGraph.navigationGraph)
+    override fun provideGraph(): NavGraphBuilder.() -> Unit = {
+        navigation(featureOneGraph.startDestination, NavScope.HOME.tag) {
+            also(featureOneGraph.provideGraph())
         }
 
-        navigation(featureTwoGraph.startDestination, FEATURE_TWO_NAVIGATION) {
-            also(featureTwoGraph.navigationGraph)
+        navigation(featureTwoGraph.startDestination, NavScope.HUB.tag) {
+            also(featureTwoGraph.provideGraph())
         }
-    }
-
-    companion object {
-        const val FEATURE_ONE_NAVIGATION = "feature_one_navigation"
-        const val FEATURE_TWO_NAVIGATION = "feature_two_navigation"
     }
 }

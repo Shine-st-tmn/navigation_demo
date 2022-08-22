@@ -1,13 +1,12 @@
-package com.shint_st.navigation
+package com.shint_st.navigation.utils
 
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.navigation.NavType
+import com.shint_st.navigation.api.NavParams
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-
-abstract class NavigationParameters<T : Parcelable>(isNullable: Boolean) : NavType<T>(
+abstract class NavParamsSerializer<T : NavParams>(isNullable: Boolean) : NavType<T>(
     isNullableAllowed = isNullable
 ) {
     override fun put(bundle: Bundle, key: String, value: T) {
