@@ -45,6 +45,16 @@ class NavRouterImpl @Inject constructor(
                     .setAnimation(action.route)
                     .build()
             )
+            is NavAction.ForwardStack -> {
+                for (route in action.routes) {
+                    navController.navigate(
+                        getNavigationRoute(route),
+                        NavOptions.Builder()
+                            .setAnimation(route)
+                            .build()
+                    )
+                }
+            }
         }
     }
 

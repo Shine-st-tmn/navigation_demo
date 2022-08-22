@@ -2,6 +2,7 @@ package com.shint_st.navigation.api
 
 sealed interface NavAction {
     class Forward(val route: NavRoute) : NavAction
+    class ForwardStack(val routes: List<NavRoute>) : NavAction
     class BackTo(
         val route: NavRoute,
         val inclusive: Boolean,

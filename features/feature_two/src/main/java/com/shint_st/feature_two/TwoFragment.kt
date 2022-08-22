@@ -27,8 +27,20 @@ class TwoFragment : Fragment() {
     ): View {
         _binding = FragmentTwoBinding.inflate(inflater, container, false)
         binding.mbNavigateToThree.setOnClickListener {
-            val params = ThreeFragmentGraphUnit.Parameters("42 is antwort")
-            router.executeAction(NavAction.Forward(ThreeFragmentRoute(params)))
+            router.executeAction(
+                NavAction.ForwardStack(
+                    listOf(
+                        ThreeFragmentRoute(
+                            ThreeFragmentGraphUnit.Parameters("42 is antwort")
+                        ),
+                        FourFragmentRoute(
+                            FourFragmentGraphUnit.Parameters(
+                                "test text"
+                            )
+                        )
+                    )
+                )
+            )
         }
 
         return binding.root
