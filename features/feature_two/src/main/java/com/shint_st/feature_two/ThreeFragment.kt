@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.shint_st.feature_two.ThreeFragmentGraphUnit.Companion.ARGUMENTS
 import com.shint_st.feature_two.databinding.FragmentThreeBinding
+import com.shint_st.navigation.api.NavAction
+import com.shint_st.navigation.api.NavRouter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -19,6 +22,9 @@ class ThreeFragment : Fragment() {
         arguments?.getParcelable<ThreeFragmentGraphUnit.Parameters>(ARGUMENTS)
     }
 
+    @Inject
+    lateinit var router: NavRouter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,6 +32,20 @@ class ThreeFragment : Fragment() {
     ): View {
         _binding = FragmentThreeBinding.inflate(inflater, container, false)
         args?.let { binding.text.text = it.text }
+
+
+        binding.mbNavigateToFour.setOnClickListener {
+            router.executeAction(
+                NavAction.NewStack(
+                    FourFragmentRoute(
+                        FourFragmentGraphUnit.Parameters(
+                            "test text"
+                        )
+                    )
+                )
+            )
+        }
+
 
         return binding.root
     }

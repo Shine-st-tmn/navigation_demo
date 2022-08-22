@@ -2,8 +2,10 @@ package com.shint_st.navigation_demo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
+import com.shint_st.navigation.NavRouterImpl
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
 import com.shint_st.navigation.utils.setupWithDSLNavController
@@ -15,6 +17,13 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var navigationGraph: NavGraphComposer
+
+    private val router by lazy {
+        NavRouterImpl.getInstance(
+            findNavController(R.id.nav_host_fragment_activity_main)
+        )
+    }
+
     private lateinit var binding: ActivityMainBinding
     private val navController by lazy {
         findNavController(R.id.nav_host_fragment_activity_main)
@@ -34,5 +43,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.feature_two_navigation to NavScope.HUB
             )
         )
+
+        lifecycleScope.launchWhenCreated {
+            router.currentScopeFlow.collect {
+                binding.navView.selectedItemId = if (it == NavScope.HOME) {
+                    R.id.feature_one_navigation
+                } else {
+                    R.id.feature_two_navigation
+                }
+            }
+        }
     }
 }

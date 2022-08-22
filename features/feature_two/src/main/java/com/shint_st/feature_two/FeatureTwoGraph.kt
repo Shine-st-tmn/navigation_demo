@@ -16,6 +16,7 @@ class FeatureTwoGraph @Inject constructor() : NavGraphComposer {
     override fun provideGraph(): NavGraphBuilder.() -> Unit = {
         also(TwoFragmentGraphUnit().provideGraphUnit())
         also(ThreeFragmentGraphUnit().provideGraphUnit())
+        also(FourFragmentGraphUnit().provideGraphUnit())
     }
 }
 
@@ -56,7 +57,32 @@ class ThreeFragmentGraphUnit : NavGraphUnit {
     }
 }
 
-class TwoFragmentRoute : NavRoute(TwoFragmentGraphUnit.TAG, NavScope.HUB)
+class FourFragmentGraphUnit : NavGraphUnit {
+    override fun provideGraphUnit(): NavGraphBuilder.() -> Unit = {
+        fragment<FourFragment>(makeGraphKey(TAG, ARGUMENTS)) {
+            argument(ARGUMENTS) {
+                type = ParametersType()
+                defaultValue = Parameters("FourFragment")
+                nullable = true
+            }
+        }
+    }
+
+    @Serializable
+    @Parcelize
+    data class Parameters(
+        val text: String
+    ) : NavParams()
+
+    class ParametersType : NavParamsSerializer<Parameters>(true) {
+        override fun parseValue(value: String): Parameters = parseValueDefault(value)
+    }
+
+    companion object {
+        const val TAG = "FourFragment_nav_id"
+        const val ARGUMENTS = "FourFragment_arguments"
+    }
+}
 
 class ThreeFragmentRoute(params: ThreeFragmentGraphUnit.Parameters?) : NavRoute(
     ThreeFragmentGraphUnit.TAG,
@@ -66,6 +92,18 @@ class ThreeFragmentRoute(params: ThreeFragmentGraphUnit.Parameters?) : NavRoute(
     override fun getParamsString(): String? = Uri.encode(
         Json.encodeToString(
             params as? ThreeFragmentGraphUnit.Parameters
+        )
+    )
+}
+
+class FourFragmentRoute(params: FourFragmentGraphUnit.Parameters?) : NavRoute(
+    FourFragmentGraphUnit.TAG,
+    NavScope.HUB,
+    params
+) {
+    override fun getParamsString(): String? = Uri.encode(
+        Json.encodeToString(
+            params as? FourFragmentGraphUnit.Parameters
         )
     )
 }

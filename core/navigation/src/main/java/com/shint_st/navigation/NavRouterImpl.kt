@@ -6,14 +6,16 @@ import androidx.navigation.NavOptions
 import com.shint_st.navigation.api.NavAction
 import com.shint_st.navigation.api.NavRoute
 import com.shint_st.navigation.api.NavRouter
-import dagger.hilt.android.components.ActivityComponent
-import it.czerwinski.android.hilt.annotations.BoundTo
+import com.shint_st.navigation.api.NavScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
-@BoundTo(supertype = NavRouter::class, component = ActivityComponent::class)
-internal class NavRouterImpl @Inject constructor(
-    private val navController: NavController
+class NavRouterImpl @Inject constructor(
+    private val navController: NavController,
 ) : NavRouter {
+    private val mutableScopeFlow = MutableSharedFlow<NavScope>()
+    override val currentScopeFlow: SharedFlow<NavScope> = mutableScopeFlow
 
     override fun executeAction(action: NavAction) {
         when (action) {
@@ -54,6 +56,7 @@ internal class NavRouterImpl @Inject constructor(
 
     private fun getNavigationRoute(route: NavRoute): String {
         val argument = route.getParamsString()
+        mutableScopeFlow.tryEmit(route.scope)
         return "${route.id}/$argument"
     }
 
@@ -74,4 +77,16 @@ internal class NavRouterImpl @Inject constructor(
             .setPopExitAnim(animation.popExitAnim)
     }
 
+    companion object {
+        var instance: NavRouter? = null
+
+        @Synchronized
+        fun getInstance(navController: NavController): NavRouter {
+            if (instance == null) {
+                instance = NavRouterImpl(navController)
+            }
+
+            return instance!!
+        }
+    }
 }
