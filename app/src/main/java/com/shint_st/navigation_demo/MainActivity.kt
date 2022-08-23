@@ -44,14 +44,5 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        lifecycleScope.launchWhenCreated {
-            router.currentScopeFlow.collect {
-                binding.navView.selectedItemId = if (it == NavScope.HOME) {
-                    R.id.feature_one_navigation
-                } else {
-                    R.id.feature_two_navigation
-                }
-            }
-        }
     }
 }

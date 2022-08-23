@@ -1,22 +1,18 @@
 package com.shint_st.navigation
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
 import com.shint_st.navigation.api.NavAction
 import com.shint_st.navigation.api.NavRoute
 import com.shint_st.navigation.api.NavRouter
-import com.shint_st.navigation.api.NavScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
 class NavRouterImpl @Inject constructor(
     private val navController: NavController,
 ) : NavRouter {
-    private val mutableScopeFlow = MutableSharedFlow<NavScope>()
-    override val currentScopeFlow: SharedFlow<NavScope> = mutableScopeFlow
-
     override fun executeAction(action: NavAction) {
         when (action) {
             NavAction.Back -> navController.popBackStack()
@@ -25,27 +21,8 @@ class NavRouterImpl @Inject constructor(
                 action.inclusive,
                 action.saveState
             )
-            is NavAction.Forward -> navController.navigate(
-                getNavigationRoute(action.route),
-                NavOptions.Builder()
-                    .setAnimation(action.route)
-                    .build()
-            )
-            is NavAction.NewStack -> navController.navigate(
-                getNavigationRoute(action.route),
-                NavOptions.Builder()
-                    .setExternal(action.route)
-                    .setAnimation(action.route)
-                    .build()
-            )
-            is NavAction.Replace -> navController.navigate(
-                getNavigationRoute(action.route),
-                NavOptions.Builder()
-                    .setReplace()
-                    .setAnimation(action.route)
-                    .build()
-            )
-            is NavAction.ForwardStack -> {
+            is NavAction.Forward -> {
+                changeScope(action.route.scope.tag)
                 for (route in action.routes) {
                     navController.navigate(
                         getNavigationRoute(route),
@@ -54,7 +31,35 @@ class NavRouterImpl @Inject constructor(
                             .build()
                     )
                 }
+
+                navController.navigate(
+                    getNavigationRoute(action.route),
+                    NavOptions.Builder()
+                        .setAnimation(action.route)
+                        .build()
+                )
             }
+            is NavAction.NewStack -> {
+                changeScope(action.route.scope.tag)
+                navController.navigate(
+                    getNavigationRoute(action.route),
+                    NavOptions.Builder()
+                        .setExternal(action.route)
+                        .setAnimation(action.route)
+                        .build()
+                )
+            }
+            is NavAction.Replace -> {
+                changeScope(action.route.scope.tag)
+                navController.navigate(
+                    getNavigationRoute(action.route),
+                    NavOptions.Builder()
+                        .setReplace()
+                        .setAnimation(action.route)
+                        .build()
+                )
+            }
+            is NavAction.SelectScope -> changeScope(action.scope.tag)
         }
     }
 
@@ -64,9 +69,26 @@ class NavRouterImpl @Inject constructor(
     override fun getCurrentDestination(): NavDestination? = navController
         .currentDestination
 
+    override fun getCurrentBackStack(): NavBackStackEntry? = navController
+        .currentBackStackEntry
+
+    private fun changeScope(graphTag: String) {
+        if (navController.currentDestination?.parent?.route == graphTag) return
+        val builder = NavOptions.Builder().apply {
+            setLaunchSingleTop(true)
+            setRestoreState(true)
+            setPopUpTo(
+                navController.graph.findStartDestination().id,
+                inclusive = false,
+                saveState = true
+            )
+        }
+
+        navController.navigate(graphTag, builder.build())
+    }
+
     private fun getNavigationRoute(route: NavRoute): String {
         val argument = route.getParamsString()
-        mutableScopeFlow.tryEmit(route.scope)
         return "${route.id}/$argument"
     }
 
