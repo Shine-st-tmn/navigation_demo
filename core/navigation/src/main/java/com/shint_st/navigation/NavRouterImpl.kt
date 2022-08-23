@@ -5,25 +5,27 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
-import com.shint_st.navigation.api.NavAction
+import com.shint_st.navigation.api.NavActionsMapper
+import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRoute
 import com.shint_st.navigation.api.NavRouter
 import javax.inject.Inject
 
 class NavRouterImpl @Inject constructor(
     private val navController: NavController,
+    private val navActionsMapper: NavActionsMapper,
 ) : NavRouter {
-    override fun executeAction(action: NavAction) {
-        when (action) {
-            NavAction.Back -> navController.popBackStack()
-            is NavAction.BackTo -> navController.popBackStack(
-                action.route.id,
-                action.inclusive,
-                action.saveState
+    override fun executeAction(command: NavCommand) {
+        when (command) {
+            NavCommand.Back -> navController.popBackStack()
+            is NavCommand.BackTo -> navController.popBackStack(
+                command.route.id,
+                command.inclusive,
+                command.saveState
             )
-            is NavAction.Forward -> {
-                changeScope(action.route.scope.tag)
-                for (route in action.routes) {
+            is NavCommand.Forward -> {
+                changeScope(command.route.scope.tag)
+                for (route in command.routes) {
                     navController.navigate(
                         getNavigationRoute(route),
                         NavOptions.Builder()
@@ -33,33 +35,37 @@ class NavRouterImpl @Inject constructor(
                 }
 
                 navController.navigate(
-                    getNavigationRoute(action.route),
+                    getNavigationRoute(command.route),
                     NavOptions.Builder()
-                        .setAnimation(action.route)
+                        .setAnimation(command.route)
                         .build()
                 )
             }
-            is NavAction.NewStack -> {
-                changeScope(action.route.scope.tag)
+            is NavCommand.NewStack -> {
+                changeScope(command.route.scope.tag)
                 navController.navigate(
-                    getNavigationRoute(action.route),
+                    getNavigationRoute(command.route),
                     NavOptions.Builder()
-                        .setExternal(action.route)
-                        .setAnimation(action.route)
+                        .setExternal(command.route)
+                        .setAnimation(command.route)
                         .build()
                 )
             }
-            is NavAction.Replace -> {
-                changeScope(action.route.scope.tag)
+            is NavCommand.Replace -> {
+                changeScope(command.route.scope.tag)
                 navController.navigate(
-                    getNavigationRoute(action.route),
+                    getNavigationRoute(command.route),
                     NavOptions.Builder()
                         .setReplace()
-                        .setAnimation(action.route)
+                        .setAnimation(command.route)
                         .build()
                 )
             }
-            is NavAction.SelectScope -> changeScope(action.scope.tag)
+            is NavCommand.SelectScope -> changeScope(command.scope.tag)
+            is NavCommand.ProcessAction -> navActionsMapper.mapNavAction(
+                command.action,
+                this
+            )
         }
     }
 
@@ -71,6 +77,8 @@ class NavRouterImpl @Inject constructor(
 
     override fun getCurrentBackStack(): NavBackStackEntry? = navController
         .currentBackStackEntry
+
+    override fun getBackQueue() = navController.backQueue
 
     private fun changeScope(graphTag: String) {
         if (navController.currentDestination?.parent?.route == graphTag) return
@@ -115,7 +123,10 @@ class NavRouterImpl @Inject constructor(
         @Synchronized
         fun getInstance(navController: NavController): NavRouter {
             if (instance == null) {
-                instance = NavRouterImpl(navController)
+                val mapper = NavActionsMapper { action, router ->
+                    // Nothing, it's just a stub
+                }
+                instance = NavRouterImpl(navController, mapper)
             }
 
             return instance!!

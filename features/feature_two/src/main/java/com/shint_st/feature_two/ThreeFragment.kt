@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.shint_st.feature_two.ThreeFragmentGraphUnit.Companion.ARGUMENTS
 import com.shint_st.feature_two.databinding.FragmentThreeBinding
-import com.shint_st.navigation.api.NavAction
+import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRouter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -36,7 +36,7 @@ class ThreeFragment : Fragment() {
 
         binding.mbNavigateToFour.setOnClickListener {
             router.executeAction(
-                NavAction.NewStack(
+                NavCommand.NewStack(
                     FourFragmentRoute(
                         FourFragmentGraphUnit.Parameters(
                             "test text"

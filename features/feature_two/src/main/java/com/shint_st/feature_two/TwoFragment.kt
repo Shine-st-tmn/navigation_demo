@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.shint_st.feature_two.databinding.FragmentTwoBinding
-import com.shint_st.navigation.api.NavAction
+import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRouter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,7 +28,7 @@ class TwoFragment : Fragment() {
         _binding = FragmentTwoBinding.inflate(inflater, container, false)
         binding.mbNavigateToThree.setOnClickListener {
             router.executeAction(
-                NavAction.ForwardStack(
+                NavCommand.ForwardStack(
                     listOf(
                         ThreeFragmentRoute(
                             ThreeFragmentGraphUnit.Parameters("42 is antwort")
