@@ -5,17 +5,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
-import com.shint_st.navigation.api.NavActionsMapper
 import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRoute
 import com.shint_st.navigation.api.NavRouter
 import javax.inject.Inject
 
 class NavRouterImpl @Inject constructor(
-    private val navController: NavController,
-    private val navActionsMapper: NavActionsMapper,
+    private val navController: NavController
 ) : NavRouter {
-    override fun executeAction(command: NavCommand) {
+    override fun executeCommand(command: NavCommand) {
         when (command) {
             NavCommand.Back -> navController.popBackStack()
             is NavCommand.BackTo -> navController.popBackStack(
@@ -62,10 +60,6 @@ class NavRouterImpl @Inject constructor(
                 )
             }
             is NavCommand.SelectScope -> changeScope(command.scope.tag)
-            is NavCommand.ProcessAction -> navActionsMapper.mapNavAction(
-                command.action,
-                this
-            )
         }
     }
 
@@ -122,13 +116,7 @@ class NavRouterImpl @Inject constructor(
 
         @Synchronized
         fun getInstance(navController: NavController): NavRouter {
-            if (instance == null) {
-                val mapper = NavActionsMapper { action, router ->
-                    // Nothing, it's just a stub
-                }
-                instance = NavRouterImpl(navController, mapper)
-            }
-
+            if (instance == null) instance = NavRouterImpl(navController)
             return instance!!
         }
     }

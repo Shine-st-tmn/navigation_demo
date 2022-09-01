@@ -35,7 +35,7 @@ class OneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mbSomething.setOnClickListener {
-            navRouter.executeAction(NavCommand.SelectScope(NavScope.HUB))
+            navRouter.executeCommand(NavCommand.SelectScope(NavScope.HUB))
             model.makeSomething()
         }
     }

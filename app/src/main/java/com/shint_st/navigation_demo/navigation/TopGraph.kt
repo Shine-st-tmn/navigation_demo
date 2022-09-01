@@ -3,16 +3,14 @@ package com.shint_st.navigation_demo.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.shint_st.feature_one.navigation.FeatureOneGraph
-import com.shint_st.feature_two.FeatureTwoGraph
+import com.shint_st.feature_two.navigation.FeatureTwoGraph
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ActivityComponent
 import it.czerwinski.android.hilt.annotations.BoundTo
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-@BoundTo(supertype = NavGraphComposer::class, component = SingletonComponent::class)
+@BoundTo(supertype = NavGraphComposer::class, component = ActivityComponent::class)
 class TopGraph @Inject constructor(
     private val featureOneGraph: FeatureOneGraph,
     private val featureTwoGraph: FeatureTwoGraph,

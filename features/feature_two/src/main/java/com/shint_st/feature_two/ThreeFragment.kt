@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.shint_st.feature_two.ThreeFragmentGraphUnit.Companion.ARGUMENTS
+import com.shint_st.feature_two.navigation.ThreeFragmentGraphUnit.Companion.ARGUMENTS
 import com.shint_st.feature_two.databinding.FragmentThreeBinding
+import com.shint_st.feature_two.navigation.*
+import com.shint_st.navigation.api.NavActionsMapper
 import com.shint_st.navigation.api.NavCommand
-import com.shint_st.navigation.api.NavRouter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -23,7 +24,7 @@ class ThreeFragment : Fragment() {
     }
 
     @Inject
-    lateinit var router: NavRouter
+    lateinit var router: NavActionsMapper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,20 +33,7 @@ class ThreeFragment : Fragment() {
     ): View {
         _binding = FragmentThreeBinding.inflate(inflater, container, false)
         args?.let { binding.text.text = it.text }
-
-
-        binding.mbNavigateToFour.setOnClickListener {
-            router.executeAction(
-                NavCommand.NewStack(
-                    FourFragmentRoute(
-                        FourFragmentGraphUnit.Parameters(
-                            "test text"
-                        )
-                    )
-                )
-            )
-        }
-
+        binding.mbNavigateToFour.setOnClickListener { router.navigate(FourFragmentAction()) }
 
         return binding.root
     }

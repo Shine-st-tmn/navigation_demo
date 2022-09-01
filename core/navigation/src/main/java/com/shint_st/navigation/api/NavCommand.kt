@@ -6,8 +6,6 @@ sealed interface NavCommand {
         val routes: List<NavRoute> = listOf()
     ) : NavCommand
 
-    class ProcessAction(val action: NavAction) : NavCommand
-
     class BackTo(
         val route: NavRoute,
         val inclusive: Boolean,

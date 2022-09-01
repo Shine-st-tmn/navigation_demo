@@ -4,7 +4,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 
 interface NavRouter {
-    fun executeAction(command: NavCommand)
+    fun executeCommand(command: NavCommand)
     fun findDestination(id: String): NavDestination?
     fun getCurrentDestination(): NavDestination?
     fun getCurrentBackStack(): NavBackStackEntry?

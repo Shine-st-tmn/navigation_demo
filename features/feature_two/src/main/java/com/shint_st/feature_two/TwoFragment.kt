@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.shint_st.feature_two.databinding.FragmentTwoBinding
+import com.shint_st.feature_two.navigation.*
+import com.shint_st.navigation.api.NavActionsMapper
 import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRouter
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +20,7 @@ class TwoFragment : Fragment() {
     private val binding get() = _binding!!
 
     @Inject
-    lateinit var router: NavRouter
+    lateinit var router: NavActionsMapper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,20 +29,7 @@ class TwoFragment : Fragment() {
     ): View {
         _binding = FragmentTwoBinding.inflate(inflater, container, false)
         binding.mbNavigateToThree.setOnClickListener {
-            router.executeAction(
-                NavCommand.ForwardStack(
-                    listOf(
-                        ThreeFragmentRoute(
-                            ThreeFragmentGraphUnit.Parameters("42 is antwort")
-                        ),
-                        FourFragmentRoute(
-                            FourFragmentGraphUnit.Parameters(
-                                "test text"
-                            )
-                        )
-                    )
-                )
-            )
+            router.navigate(FourFragmentWithTailAction())
         }
 
         return binding.root

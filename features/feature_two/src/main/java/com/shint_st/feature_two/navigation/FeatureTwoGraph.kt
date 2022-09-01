@@ -1,8 +1,11 @@
-package com.shint_st.feature_two
+package com.shint_st.feature_two.navigation
 
 import android.net.Uri
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.fragment.fragment
+import com.shint_st.feature_two.FourFragment
+import com.shint_st.feature_two.ThreeFragment
+import com.shint_st.feature_two.TwoFragment
 import com.shint_st.navigation.api.*
 import com.shint_st.navigation.utils.NavParamsSerializer
 import kotlinx.parcelize.Parcelize
@@ -35,7 +38,6 @@ class ThreeFragmentGraphUnit : NavGraphUnit {
         fragment<ThreeFragment>(makeGraphKey(TAG, ARGUMENTS)) {
             argument(ARGUMENTS) {
                 type = ParametersType()
-                defaultValue = Parameters("ThreeFragment")
                 nullable = true
             }
         }
