@@ -4,21 +4,21 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.shint_st.feature_one.navigation.FeatureOneGraph
 import com.shint_st.feature_two.navigation.FeatureTwoGraph
+import com.shint_st.login.navigation.LoginGraph
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
-import dagger.hilt.android.components.ActivityComponent
-import it.czerwinski.android.hilt.annotations.BoundTo
-import javax.inject.Inject
 
-@BoundTo(supertype = NavGraphComposer::class, component = ActivityComponent::class)
-class TopGraph @Inject constructor(
-    private val featureOneGraph: FeatureOneGraph,
-    private val featureTwoGraph: FeatureTwoGraph,
-) : NavGraphComposer {
+class TopGraph(private val isLogin: Boolean) : NavGraphComposer {
+    private val featureOneGraph: FeatureOneGraph = FeatureOneGraph()
+    private val featureTwoGraph: FeatureTwoGraph = FeatureTwoGraph()
+    private val loginGraph: LoginGraph = LoginGraph()
+
     override val startDestination: String = NavScope.HOME.tag
 
     override fun provideGraph(): NavGraphBuilder.() -> Unit = {
-        navigation(featureOneGraph.startDestination, NavScope.HOME.tag) {
+        val start = if (isLogin) loginGraph.startDestination else featureOneGraph.startDestination
+        navigation(start, NavScope.HOME.tag) {
+            also(loginGraph.provideGraph())
             also(featureOneGraph.provideGraph())
         }
 

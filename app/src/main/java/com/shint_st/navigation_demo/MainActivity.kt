@@ -2,27 +2,18 @@ package com.shint_st.navigation_demo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
-import com.shint_st.navigation.NavRouterImpl
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
 import com.shint_st.navigation.utils.setupWithDSLNavController
 import com.shint_st.navigation_demo.databinding.ActivityMainBinding
+import com.shint_st.navigation_demo.navigation.TopGraph
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    @Inject
-    lateinit var navigationGraph: NavGraphComposer
-
-    private val router by lazy {
-        NavRouterImpl.getInstance(
-            findNavController(R.id.nav_host_fragment_activity_main)
-        )
-    }
+    private val navigationGraph: NavGraphComposer by lazy { TopGraph(true) }
 
     private lateinit var binding: ActivityMainBinding
     private val navController by lazy {
