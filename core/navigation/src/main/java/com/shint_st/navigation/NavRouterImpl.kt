@@ -91,7 +91,7 @@ class NavRouterImpl @Inject constructor(
 
     private fun getNavigationRoute(route: NavRoute): String {
         val argument = route.getParamsString()
-        return "${route.id}/$argument"
+        return if (argument == null) route.id else "${route.id}/$argument"
     }
 
     private fun NavOptions.Builder.setReplace(): NavOptions.Builder {
@@ -99,8 +99,10 @@ class NavRouterImpl @Inject constructor(
         return this.setPopUpTo(current.route, true)
     }
 
-    private fun NavOptions.Builder.setExternal(route: NavRoute): NavOptions.Builder =
-        this.setPopUpTo(route.scope.tag, false)
+    private fun NavOptions.Builder.setExternal(route: NavRoute): NavOptions.Builder = this.apply {
+        setPopUpTo(route.scope.tag, true)
+        setLaunchSingleTop(true)
+    }
 
     private fun NavOptions.Builder.setAnimation(route: NavRoute): NavOptions.Builder {
         val animation = route.animation ?: return this

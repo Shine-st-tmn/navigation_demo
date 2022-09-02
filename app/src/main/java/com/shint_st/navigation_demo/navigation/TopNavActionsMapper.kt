@@ -9,10 +9,13 @@ import javax.inject.Inject
 
 @BoundTo(supertype = NavActionsMapper::class, component = ActivityComponent::class)
 class TopNavActionsMapper @Inject constructor(
-    featureTwo: FeatureTwoNavActionsMapper
+    featureTwo: FeatureTwoNavActionsMapper,
+    globalActionMapper: GlobalActionMapper
 ) : NavActionsMapper {
-    private val mappers = listOf<NavActionsMapper>(
-        featureTwo
+
+    private val mappers = listOf(
+        featureTwo,
+        globalActionMapper
     )
 
     override fun navigate(action: NavAction): Boolean {
