@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
+import com.shint_st.navigation.NavRouterHolderFactory
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
 import com.shint_st.navigation.utils.setupWithDSLNavController
@@ -16,6 +17,9 @@ class MainActivity : AppCompatActivity() {
     private val navigationGraph: NavGraphComposer by lazy { TopGraph(true) }
 
     private lateinit var binding: ActivityMainBinding
+    private val navHolder by lazy {
+        NavRouterHolderFactory.getInstance()
+    }
     private val navController by lazy {
         findNavController(R.id.nav_host_fragment_activity_main)
     }
@@ -34,6 +38,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.feature_two_navigation to NavScope.HUB
             )
         )
+    }
 
+    override fun onResume() {
+        super.onResume()
+        navHolder.setNavController(navController)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        navHolder.clearNavController()
     }
 }

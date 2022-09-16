@@ -3,7 +3,7 @@ package com.shint_st.navigation_demo
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import com.shint_st.navigation.NavRouterImpl
+import com.shint_st.navigation.NavRouterHolderFactory
 import com.shint_st.navigation.api.NavRouter
 import dagger.Module
 import dagger.Provides
@@ -24,6 +24,10 @@ object AnalyticsModule {
     }
 
     @Provides
-    fun provideNavRouter(navController: NavController): NavRouter =
-        NavRouterImpl.getInstance(navController)
+    fun provideNavRouter(navController: NavController): NavRouter {
+        val holder = NavRouterHolderFactory.getInstance()
+        holder.setNavController(navController)
+
+        return holder.getNavRouter()
+    }
 }

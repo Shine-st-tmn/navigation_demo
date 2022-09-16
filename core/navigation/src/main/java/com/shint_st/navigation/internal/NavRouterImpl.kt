@@ -1,4 +1,4 @@
-package com.shint_st.navigation
+package com.shint_st.navigation.internal
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -8,9 +8,8 @@ import androidx.navigation.NavOptions
 import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRoute
 import com.shint_st.navigation.api.NavRouter
-import javax.inject.Inject
 
-class NavRouterImpl @Inject constructor(
+internal class NavRouterImpl constructor(
     private val navController: NavController
 ) : NavRouter {
     override fun executeCommand(command: NavCommand) {
@@ -111,15 +110,5 @@ class NavRouterImpl @Inject constructor(
             .setExitAnim(animation.exitAnim)
             .setPopEnterAnim(animation.popEnterAnim)
             .setPopExitAnim(animation.popExitAnim)
-    }
-
-    companion object {
-        var instance: NavRouter? = null
-
-        @Synchronized
-        fun getInstance(navController: NavController): NavRouter {
-            if (instance == null) instance = NavRouterImpl(navController)
-            return instance!!
-        }
     }
 }
