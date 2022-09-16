@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.shint_st.feature_one.databinding.FragmentOneBinding
+import com.shint_st.login.navigation.LoginRoute
 import com.shint_st.navigation.api.NavCommand
 import com.shint_st.navigation.api.NavRouter
-import com.shint_st.navigation.api.NavScope
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ class OneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mbSomething.setOnClickListener {
-            navRouter.executeCommand(NavCommand.SelectScope(NavScope.HUB))
+            navRouter.executeCommand(NavCommand.NewStack(LoginRoute))
             model.makeSomething()
         }
     }

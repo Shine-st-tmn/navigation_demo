@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import com.shint_st.navigation.NavRouterHolderFactory
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
+import com.shint_st.navigation.utils.hideUnspecifiedDestinations
 import com.shint_st.navigation.utils.setupWithDSLNavController
 import com.shint_st.navigation_demo.databinding.ActivityMainBinding
 import com.shint_st.navigation_demo.navigation.TopGraph
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.feature_two_navigation to NavScope.HUB
             )
         )
+        binding.navView.hideUnspecifiedDestinations(navController)
     }
 
     override fun onResume() {

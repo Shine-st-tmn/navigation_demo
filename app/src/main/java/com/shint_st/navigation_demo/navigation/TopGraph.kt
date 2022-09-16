@@ -8,17 +8,20 @@ import com.shint_st.login.navigation.LoginGraph
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
 
-class TopGraph(private val isLogin: Boolean) : NavGraphComposer {
+class TopGraph(isLogin: Boolean) : NavGraphComposer {
     private val featureOneGraph: FeatureOneGraph = FeatureOneGraph()
     private val featureTwoGraph: FeatureTwoGraph = FeatureTwoGraph()
     private val loginGraph: LoginGraph = LoginGraph()
 
-    override val startDestination: String = NavScope.HOME.tag
+    override val startDestination: String =
+        if (isLogin) NavScope.UNSPECIFIED.tag else NavScope.HOME.tag
 
     override fun provideGraph(): NavGraphBuilder.() -> Unit = {
-        val start = if (isLogin) loginGraph.startDestination else featureOneGraph.startDestination
-        navigation(start, NavScope.HOME.tag) {
+        navigation(loginGraph.startDestination, NavScope.UNSPECIFIED.tag) {
             also(loginGraph.provideGraph())
+        }
+
+        navigation(featureOneGraph.startDestination, NavScope.HOME.tag) {
             also(featureOneGraph.provideGraph())
         }
 

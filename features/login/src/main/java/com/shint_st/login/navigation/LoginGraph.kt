@@ -5,6 +5,8 @@ import androidx.navigation.fragment.fragment
 import com.shint_st.login.LoginFragment
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavGraphUnit
+import com.shint_st.navigation.api.NavRoute
+import com.shint_st.navigation.api.NavScope
 import javax.inject.Inject
 
 class LoginGraph @Inject constructor() : NavGraphComposer {
@@ -20,3 +22,5 @@ object LoginGraphUnit : NavGraphUnit {
         fragment<LoginFragment>(TAG)
     }
 }
+
+object LoginRoute : NavRoute(LoginGraphUnit.TAG, NavScope.UNSPECIFIED)
