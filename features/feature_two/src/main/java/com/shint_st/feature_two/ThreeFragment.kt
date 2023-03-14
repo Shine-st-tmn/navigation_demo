@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.shint_st.feature_two.navigation.ThreeFragmentGraphUnit.Companion.ARGUMENTS
+import androidx.navigation.fragment.findNavController
 import com.shint_st.feature_two.databinding.FragmentThreeBinding
 import com.shint_st.feature_two.navigation.*
-import com.shint_st.navigation.api.NavActionsMapper
-import com.shint_st.navigation.api.NavCommand
+import com.shint_st.navigation.api.INavRouter
+import com.shint_st.navigation.utils.getNavArgs
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -19,12 +19,14 @@ class ThreeFragment : Fragment() {
     private var _binding: FragmentThreeBinding? = null
     private val binding get() = _binding!!
 
+
     private val args by lazy {
-        arguments?.getParcelable<ThreeFragmentGraphUnit.Parameters>(ARGUMENTS)
+        findNavController().getNavArgs<ThreeFragmentGraphUnit.Parameters>(ThreeFragmentGraphUnit.TAG)
+            ?: error("No arguments")
     }
 
     @Inject
-    lateinit var router: NavActionsMapper
+    lateinit var router: INavRouter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,7 +34,7 @@ class ThreeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentThreeBinding.inflate(inflater, container, false)
-        args?.let { binding.text.text = it.text }
+        binding.text.text = args.text
         binding.mbNavigateToFour.setOnClickListener { router.navigate(FourFragmentAction()) }
 
         return binding.root

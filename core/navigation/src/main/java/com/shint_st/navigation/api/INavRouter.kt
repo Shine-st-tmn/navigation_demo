@@ -1,5 +1,5 @@
 package com.shint_st.navigation.api
 
-interface NavActionsMapper {
+interface INavRouter {
     fun navigate(action: NavAction): Boolean
 }

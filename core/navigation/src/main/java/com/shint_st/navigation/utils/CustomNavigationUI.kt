@@ -5,7 +5,6 @@ import androidx.core.view.forEach
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
 import com.google.android.material.navigation.NavigationBarView
 import com.shint_st.navigation.api.NavScope
@@ -17,29 +16,10 @@ internal class CustomNavigationUI(
     private val navGraphMap: Map<NavBarItemId, NavScope>
 ) {
     fun setupWithNavController(
-        navigationBarView: NavigationBarView,
-        navController: NavController
+        navigationBarView: WeakReference<NavigationBarView>,
+        navController: NavController,
     ) {
-        navigationBarView.setOnItemSelectedListener { item ->
-            val graph = navGraphMap[item.itemId]?.tag ?: return@setOnItemSelectedListener false
-            val builder = NavOptions.Builder().apply {
-                setLaunchSingleTop(true)
-                setRestoreState(true)
-                setPopUpTo(
-                    navController.graph.findStartDestination().id,
-                    inclusive = false,
-                    saveState = true
-                )
-            }
-
-            return@setOnItemSelectedListener try {
-                navController.navigate(graph, builder.build())
-                navController.currentDestination?.matchDestination(graph) == true
-            } catch (e: IllegalArgumentException) {
-                false
-            }
-        }
-        val weakReference = WeakReference(navigationBarView)
+        navigationBarView.get()?.onSelectListener(navController)
         navController.addOnDestinationChangedListener(
             object : NavController.OnDestinationChangedListener {
                 override fun onDestinationChanged(
@@ -47,7 +27,7 @@ internal class CustomNavigationUI(
                     destination: NavDestination,
                     arguments: Bundle?
                 ) {
-                    val view = weakReference.get()
+                    val view = navigationBarView.get()
                     if (view == null) {
                         navController.removeOnDestinationChangedListener(this)
                         return
@@ -62,15 +42,41 @@ internal class CustomNavigationUI(
             })
     }
 
+    private fun NavigationBarView.onSelectListener(
+        navController: NavController,
+    ) = setOnItemSelectedListener { item ->
+        val graph = navGraphMap[item.itemId]?.tag ?: return@setOnItemSelectedListener false
+        val lastDestination = navController.findLastDestination(graph)?.route
+
+        return@setOnItemSelectedListener try {
+            if (lastDestination != null) {
+                navController.popBackStack(
+                    route = lastDestination,
+                    inclusive = false,
+                    saveState = true
+                )
+            } else {
+                navController.navigate(graph, NavOptions.Builder().build())
+            }
+
+            navController.currentDestination?.matchDestination(graph) == true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
+    }
+
     private fun NavDestination.matchDestination(id: String): Boolean = hierarchy.any {
         it.route == id
     }
+
+    private fun NavController.findLastDestination(graphStart: String): NavDestination? =
+        backQueue.lastOrNull { it.destination.parent?.route == graphStart }?.destination
 }
 
 fun NavigationBarView.setupWithDSLNavController(
     navController: NavController,
     navGraphMap: Map<NavBarItemId, NavScope>
 ) = CustomNavigationUI(navGraphMap).setupWithNavController(
-    this,
-    navController
+    WeakReference(this),
+    navController,
 )

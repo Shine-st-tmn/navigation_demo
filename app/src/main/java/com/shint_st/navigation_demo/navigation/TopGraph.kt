@@ -7,14 +7,15 @@ import com.shint_st.feature_two.navigation.FeatureTwoGraph
 import com.shint_st.login.navigation.LoginGraph
 import com.shint_st.navigation.api.NavGraphComposer
 import com.shint_st.navigation.api.NavScope
+import javax.inject.Inject
 
-class TopGraph(isLogin: Boolean) : NavGraphComposer {
-    private val featureOneGraph: FeatureOneGraph = FeatureOneGraph()
-    private val featureTwoGraph: FeatureTwoGraph = FeatureTwoGraph()
-    private val loginGraph: LoginGraph = LoginGraph()
+class TopGraph @Inject constructor(
+    private val featureOneGraph: FeatureOneGraph,
+    private val featureTwoGraph: FeatureTwoGraph,
+    private val loginGraph: LoginGraph
+) : NavGraphComposer {
 
-    override val startDestination: String =
-        if (isLogin) NavScope.UNSPECIFIED.tag else NavScope.HOME.tag
+    override val startDestination: String = NavScope.HOME.tag
 
     override fun provideGraph(): NavGraphBuilder.() -> Unit = {
         navigation(loginGraph.startDestination, NavScope.UNSPECIFIED.tag) {

@@ -1,21 +1,22 @@
 package com.shint_st.navigation_demo.navigation
 
-import com.shint_st.feature_two.navigation.FeatureTwoNavActionsMapper
+import com.shint_st.feature_two.navigation.FeatureTwoNavActionsRouter
+import com.shint_st.navigation.api.INavRouter
 import com.shint_st.navigation.api.NavAction
-import com.shint_st.navigation.api.NavActionsMapper
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
 import it.czerwinski.android.hilt.annotations.BoundTo
 import javax.inject.Inject
 
-@BoundTo(supertype = NavActionsMapper::class, component = ActivityComponent::class)
-class TopNavActionsMapper @Inject constructor(
-    featureTwo: FeatureTwoNavActionsMapper,
-    globalActionMapper: GlobalActionMapper
-) : NavActionsMapper {
+@BoundTo(supertype = INavRouter::class, component = ActivityComponent::class)
+class TopNavActionRouter @Inject constructor(
+    featureTwo: FeatureTwoNavActionsRouter,
+    globalActionRouter: GlobalActionRouter
+) : INavRouter {
 
     private val mappers = listOf(
         featureTwo,
-        globalActionMapper
+        globalActionRouter
     )
 
     override fun navigate(action: NavAction): Boolean {
@@ -26,7 +27,6 @@ class TopNavActionsMapper @Inject constructor(
                 continue
             }
         }
-
         return false
     }
 }

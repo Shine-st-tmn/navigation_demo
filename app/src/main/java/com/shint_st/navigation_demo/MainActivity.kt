@@ -4,23 +4,25 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.createGraph
 import androidx.navigation.findNavController
-import com.shint_st.navigation.NavRouterHolderFactory
-import com.shint_st.navigation.api.NavGraphComposer
+import com.shint_st.navigation.api.INavHolder
 import com.shint_st.navigation.api.NavScope
-import com.shint_st.navigation.utils.hideUnspecifiedDestinations
 import com.shint_st.navigation.utils.setupWithDSLNavController
 import com.shint_st.navigation_demo.databinding.ActivityMainBinding
 import com.shint_st.navigation_demo.navigation.TopGraph
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val navigationGraph: NavGraphComposer by lazy { TopGraph(true) }
+
+    @Inject
+    lateinit var navigationGraph: TopGraph
+
+    @Inject
+    lateinit var navHolder: INavHolder
 
     private lateinit var binding: ActivityMainBinding
-    private val navHolder by lazy {
-        NavRouterHolderFactory.getInstance()
-    }
+
     private val navController by lazy {
         findNavController(R.id.nav_host_fragment_activity_main)
     }
@@ -39,7 +41,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.feature_two_navigation to NavScope.HUB
             )
         )
-        binding.navView.hideUnspecifiedDestinations(navController)
     }
 
     override fun onResume() {

@@ -5,13 +5,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
-import com.shint_st.navigation.api.NavCommand
-import com.shint_st.navigation.api.NavRoute
-import com.shint_st.navigation.api.NavRouter
+import com.shint_st.navigation.api.*
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
+import it.czerwinski.android.hilt.annotations.BoundTo
+import javax.inject.Inject
 
-internal class NavRouterImpl constructor(
-    private val navController: NavController
-) : NavRouter {
+internal class Navigator(
+    private val navController: NavController,
+) : INavigator {
     override fun executeCommand(command: NavCommand) {
         when (command) {
             NavCommand.Back -> navController.popBackStack()
@@ -21,25 +23,16 @@ internal class NavRouterImpl constructor(
                 command.saveState
             )
             is NavCommand.Forward -> {
-                changeScope(command.route.scope.tag)
-                for (route in command.routes) {
-                    navController.navigate(
-                        getNavigationRoute(route),
-                        NavOptions.Builder()
-                            .setAnimation(route)
-                            .build()
-                    )
-                }
-
+                command.routes.setInBackstack()
                 navController.navigate(
                     getNavigationRoute(command.route),
                     NavOptions.Builder()
                         .setAnimation(command.route)
                         .build()
                 )
+                navController.saveDataInSavedState(command.route)
             }
             is NavCommand.NewStack -> {
-                changeScope(command.route.scope.tag)
                 navController.navigate(
                     getNavigationRoute(command.route),
                     NavOptions.Builder()
@@ -47,9 +40,10 @@ internal class NavRouterImpl constructor(
                         .setAnimation(command.route)
                         .build()
                 )
+                navController.saveDataInSavedState(command.route)
+                command.routes.setInBackstack()
             }
             is NavCommand.Replace -> {
-                changeScope(command.route.scope.tag)
                 navController.navigate(
                     getNavigationRoute(command.route),
                     NavOptions.Builder()
@@ -57,24 +51,43 @@ internal class NavRouterImpl constructor(
                         .setAnimation(command.route)
                         .build()
                 )
+                navController.saveDataInSavedState(command.route)
+                command.routes.setInBackstack()
             }
             is NavCommand.SelectScope -> changeScope(command.scope.tag)
         }
     }
 
-    override fun findDestination(id: String): NavDestination? = navController
-        .findDestination(id)
+    override fun findDestination(id: String): NavDestination? = navController.findDestination(id)
 
-    override fun getCurrentDestination(): NavDestination? = navController
-        .currentDestination
+    override fun getCurrentDestination(): NavDestination? = navController.currentDestination
 
-    override fun getCurrentBackStack(): NavBackStackEntry? = navController
-        .currentBackStackEntry
+    override fun getCurrentBackStack(): NavBackStackEntry? = navController.currentBackStackEntry
 
-    override fun getBackQueue() = navController.backQueue
+    override fun getBackQueue(): ArrayDeque<NavBackStackEntry> = navController.backQueue
+
+    private fun List<NavRoute>.setInBackstack() {
+        for (route in this) {
+            navController.navigate(
+                getNavigationRoute(route),
+                NavOptions.Builder()
+                    .setAnimation(route)
+                    .build()
+            )
+            navController.saveDataInSavedState(route)
+        }
+    }
+
+    private fun NavController.saveDataInSavedState(navRoute: NavRoute) {
+        if (navRoute.params != null) {
+            getBackStackEntry(navRoute.id).savedStateHandle.set(navRoute.id, navRoute.params)
+        }
+    }
 
     private fun changeScope(graphTag: String) {
-        if (navController.currentDestination?.parent?.route == graphTag) return
+        if (navController.currentDestination?.parent?.route == graphTag
+            || graphTag == NavScope.UNSPECIFIED.tag
+        ) return
         val builder = NavOptions.Builder().apply {
             setLaunchSingleTop(true)
             setRestoreState(true)
@@ -88,10 +101,7 @@ internal class NavRouterImpl constructor(
         navController.navigate(graphTag, builder.build())
     }
 
-    private fun getNavigationRoute(route: NavRoute): String {
-        val argument = route.getParamsString()
-        return if (argument == null) route.id else "${route.id}/$argument"
-    }
+    private fun getNavigationRoute(route: NavRoute) = route.id
 
     private fun NavOptions.Builder.setReplace(): NavOptions.Builder {
         val current = getCurrentDestination() ?: return this

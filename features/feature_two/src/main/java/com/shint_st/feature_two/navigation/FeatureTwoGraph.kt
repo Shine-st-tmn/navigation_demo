@@ -1,17 +1,13 @@
 package com.shint_st.feature_two.navigation
 
-import android.net.Uri
+import android.os.Parcelable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.fragment.fragment
 import com.shint_st.feature_two.FourFragment
 import com.shint_st.feature_two.ThreeFragment
 import com.shint_st.feature_two.TwoFragment
 import com.shint_st.navigation.api.*
-import com.shint_st.navigation.utils.NavParamsSerializer
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class FeatureTwoGraph @Inject constructor() : NavGraphComposer {
@@ -35,77 +31,42 @@ class TwoFragmentGraphUnit : NavGraphUnit {
 
 class ThreeFragmentGraphUnit : NavGraphUnit {
     override fun provideGraphUnit(): NavGraphBuilder.() -> Unit = {
-        fragment<ThreeFragment>(makeGraphKey(TAG, ARGUMENTS)) {
-            argument(ARGUMENTS) {
-                type = ParametersType()
-                nullable = true
-            }
-        }
+        fragment<ThreeFragment>(TAG)
     }
 
-    @Serializable
     @Parcelize
     data class Parameters(
         val text: String
-    ) : NavParams()
-
-    class ParametersType : NavParamsSerializer<Parameters>(true) {
-        override fun parseValue(value: String): Parameters = parseValueDefault(value)
-    }
+    ) : Parcelable
 
     companion object {
         const val TAG = "ThreeFragment_nav_id"
-        const val ARGUMENTS = "ThreeFragment_arguments"
     }
 }
 
 class FourFragmentGraphUnit : NavGraphUnit {
     override fun provideGraphUnit(): NavGraphBuilder.() -> Unit = {
-        fragment<FourFragment>(makeGraphKey(TAG, ARGUMENTS)) {
-            argument(ARGUMENTS) {
-                type = ParametersType()
-                defaultValue = Parameters("FourFragment")
-                nullable = true
-            }
-        }
+        fragment<FourFragment>(TAG)
     }
 
-    @Serializable
     @Parcelize
     data class Parameters(
         val text: String
-    ) : NavParams()
-
-    class ParametersType : NavParamsSerializer<Parameters>(true) {
-        override fun parseValue(value: String): Parameters = parseValueDefault(value)
-    }
+    ) : Parcelable
 
     companion object {
         const val TAG = "FourFragment_nav_id"
-        const val ARGUMENTS = "FourFragment_arguments"
     }
 }
 
-class ThreeFragmentRoute(params: ThreeFragmentGraphUnit.Parameters?) : NavRoute(
+class ThreeFragmentRoute(params: ThreeFragmentGraphUnit.Parameters) : NavRoute(
     ThreeFragmentGraphUnit.TAG,
     NavScope.HUB,
     params
-) {
-    override fun getParamsString(): String? = Uri.encode(
-        Json.encodeToString(
-            params as? ThreeFragmentGraphUnit.Parameters
-        )
-    )
-}
+)
 
-class FourFragmentRoute(params: FourFragmentGraphUnit.Parameters?) : NavRoute(
+class FourFragmentRoute(params: FourFragmentGraphUnit.Parameters) : NavRoute(
     FourFragmentGraphUnit.TAG,
     NavScope.HUB,
     params
-) {
-    override fun getParamsString(): String? = Uri.encode(
-        Json.encodeToString(
-            params as? FourFragmentGraphUnit.Parameters
-        )
-    )
-}
+)

@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.shint_st.feature_one.databinding.FragmentOneBinding
 import com.shint_st.login.navigation.LoginRoute
+import com.shint_st.navigation.api.INavHolder
 import com.shint_st.navigation.api.NavCommand
-import com.shint_st.navigation.api.NavRouter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -18,10 +17,8 @@ class OneFragment : Fragment() {
     private var _binding: FragmentOneBinding? = null
     private val binding get() = _binding!!
 
-    private val model: OneViewModel by viewModels()
-
     @Inject
-    lateinit var navRouter: NavRouter
+    lateinit var navHolder: INavHolder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,8 +32,7 @@ class OneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mbSomething.setOnClickListener {
-            navRouter.executeCommand(NavCommand.NewStack(LoginRoute))
-            model.makeSomething()
+            navHolder.getNavigator()?.executeCommand(NavCommand.NewStack(LoginRoute))
         }
     }
 

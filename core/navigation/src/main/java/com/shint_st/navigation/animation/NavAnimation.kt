@@ -5,4 +5,8 @@ interface NavAnimation {
     val exitAnim: Int
     val popEnterAnim: Int
     val popExitAnim: Int
+
+    companion object {
+        const val NO_ANIMATION_VALUE = -1
+    }
 }

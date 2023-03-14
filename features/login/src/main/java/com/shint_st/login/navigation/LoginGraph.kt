@@ -12,14 +12,17 @@ import javax.inject.Inject
 class LoginGraph @Inject constructor() : NavGraphComposer {
     override val startDestination: String = LoginGraphUnit.TAG
     override fun provideGraph(): NavGraphBuilder.() -> Unit = {
-        also(LoginGraphUnit.provideGraphUnit())
+        also(LoginGraphUnit().provideGraphUnit())
     }
 }
 
-object LoginGraphUnit : NavGraphUnit {
-    const val TAG = "LoginFragment_destination"
+class LoginGraphUnit : NavGraphUnit {
     override fun provideGraphUnit(): NavGraphBuilder.() -> Unit = {
         fragment<LoginFragment>(TAG)
+    }
+
+    companion object {
+        const val TAG = "LoginFragment_destination"
     }
 }
 

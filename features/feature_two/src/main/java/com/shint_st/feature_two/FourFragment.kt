@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.shint_st.feature_two.navigation.ThreeFragmentGraphUnit.Companion.ARGUMENTS
+import androidx.navigation.fragment.findNavController
 import com.shint_st.feature_two.databinding.FragmentFourBinding
 import com.shint_st.feature_two.navigation.FourFragmentGraphUnit
+import com.shint_st.navigation.utils.getNavArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -17,7 +18,8 @@ class FourFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val args by lazy {
-        arguments?.getParcelable<FourFragmentGraphUnit.Parameters>(ARGUMENTS)
+        findNavController().getNavArgs<FourFragmentGraphUnit.Parameters>(FourFragmentGraphUnit.TAG)
+            ?: error("No arguments")
     }
 
     override fun onCreateView(
@@ -26,7 +28,7 @@ class FourFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFourBinding.inflate(inflater, container, false)
-        args?.let { binding.text.text = it.text }
+        binding.text.text = args.text
 
         return binding.root
     }
